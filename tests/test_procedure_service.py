@@ -48,6 +48,15 @@ def test_load_data(patch_procedure_service: MonkeyPatch, sample_data: DataFrame)
   assert not procedure.data.empty
   assert len(procedure.data) == len(sample_data)
 
+def test_load_data_real():
+  """Test loading data without monkey patching."""
+  procedure = ProcedureService()
+  procedure.load_data()
+
+  assert not procedure.data.empty
+  assert len(procedure.data) == 1771
+  assert list(procedure.data.columns) == ["code", "group"]
+  assert len(procedure.data["group"].unique()) == 16
 
 def test_find_by_code(patch_procedure_service: MonkeyPatch, sample_data: DataFrame):
   """Test finding procedures by code."""
