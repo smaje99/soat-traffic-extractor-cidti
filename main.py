@@ -1,6 +1,11 @@
 from pathlib import Path
+from typing import Final
 
 from app.factories import ServiceFactory
+
+
+MIN_CODE_PROCEDURE_LENGTH: Final = 4
+MAX_CODE_PROCEDURE_LENGTH: Final = 5
 
 
 def main():
@@ -18,6 +23,7 @@ def main():
       "Seleccione una opción:\n"
       "1. Exportar procedimientos a CSV\n"
       "2. Exportar procedimientos a JSON\n"
+      "3. Buscar procedimiento por código\n"
       "0. Salir\n"
       "Opción: "
     )
@@ -26,10 +32,28 @@ def main():
       factory.procedure.export_to_csv(Path("output/procedures.csv"))
     elif choice == "2":
       factory.procedure.export_to_json(Path("output/procedures.json"))
+    elif choice == "3":
+      code = input(
+        "Ingrese el código del procedimiento (entre "
+        f"{MIN_CODE_PROCEDURE_LENGTH} y {MAX_CODE_PROCEDURE_LENGTH} dígitos): "
+      )
+      if len(code) < MIN_CODE_PROCEDURE_LENGTH or len(code) > MAX_CODE_PROCEDURE_LENGTH:
+        print("Código inválido. Debe tener entre 4 y 5 dígitos.")
+        continue
+
+      result = factory.procedure.find_by_code(int(code))
+      if result.empty:
+        print("Procedimiento no encontrado.")
+        continue
+
+      print("Procedimiento encontrado:")
+      print(result)
     elif choice == "0":
       break
     else:
       print("Opción no válida. Intente nuevamente.")
+
+    print()
 
 
 if __name__ == "__main__":

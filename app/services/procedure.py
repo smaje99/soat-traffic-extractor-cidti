@@ -43,3 +43,7 @@ class ProcedureService:
   def export_to_json(self, output_path: Path):
     """Export the procedure data to a JSON file."""
     export_to_json(self.__data, output_path)
+
+  def find_by_code(self, code: int) -> DataFrame:
+    """Find a procedure by its code."""
+    return self.__data[self.__data["code"] == code]
