@@ -6,6 +6,11 @@ import pandas as pd
 __all__ = ("export_to_csv", "export_to_json",)
 
 
+def _create_output_folder(input_path: Path):
+    """Create the output folder if it doesn't exist."""
+    input_path.parent.mkdir(parents=True, exist_ok=True)
+
+
 def export_to_csv(df: pd.DataFrame, output_path: Path):
   """Export DataFrame to CSV file.
 
@@ -14,6 +19,7 @@ def export_to_csv(df: pd.DataFrame, output_path: Path):
       output_path (Path): The path to the output CSV file.
       columns (list[str]): The columns to export.
   """
+  _create_output_folder(output_path)
   df.to_csv(output_path, index=False, encoding="utf-8-sig")
 
 
@@ -24,4 +30,5 @@ def export_to_json(df: pd.DataFrame, output_path: Path):
       df (pd.DataFrame): The DataFrame to export.
       output_path (Path): The path to the output JSON file.
   """
+  _create_output_folder(output_path)
   df.to_json(output_path, orient="records", indent=2, force_ascii=False)  # type: ignore
