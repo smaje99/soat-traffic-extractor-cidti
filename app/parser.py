@@ -13,7 +13,8 @@ def parse_procedure_records(pages: list[str]) -> pd.DataFrame:
       pages (list[str]): A list of raw page texts.
 
   Returns:
-      pd.DataFrame: A DataFrame containing parsed procedure records.
+      pd.DataFrame: A DataFrame containing parsed procedure records
+        with "code" and "group" columns.
   """
   records: list[dict[str, int]] = []
 

@@ -21,10 +21,8 @@ class ProcedureService:
   """Service for managing procedures in the SOAT 2025 tariff."""
   def __init__(self):
     """Service for managing procedures in the SOAT 2025 tariff."""
-    self.__data: DataFrame | None = None
-    self.__load_data()
 
-  def __load_data(self):
+  def load_data(self):
     """Load procedure data from the source."""
     pages = extract_text_from_pdf(
       SOAT_FILE_PATH,
@@ -34,16 +32,14 @@ class ProcedureService:
     self.__data = parse_procedure_records(pages)
 
   @property
-  def data(self) -> DataFrame | None:
+  def data(self) -> DataFrame:
     """Get the procedure data."""
     return self.__data
 
   def export_to_csv(self, output_path: Path):
     """Export the procedure data to a CSV file."""
-    if self.__data is not None:
-      export_to_csv(self.__data, output_path)
+    export_to_csv(self.__data, output_path)
 
   def export_to_json(self, output_path: Path):
     """Export the procedure data to a JSON file."""
-    if self.__data is not None:
-      export_to_json(self.__data, output_path)
+    export_to_json(self.__data, output_path)
