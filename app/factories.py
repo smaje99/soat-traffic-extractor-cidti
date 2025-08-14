@@ -28,6 +28,22 @@ class ServiceFactory:
     self.__pre_consultation = PreConsultationService()
     self.__operating_room = OperatingRoomService()
     self.__material = MaterialService()
+
+    self.__load_services()
+    self.__load_cost_aggregator()
+
+  def __load_services(self):
+    """Load all service data."""
+    self.__procedure.load_data()
+    self.__surgeon.load_data()
+    self.__anesthesiologist.load_data()
+    self.__assistant.load_data()
+    self.__pre_consultation.load_data()
+    self.__operating_room.load_data()
+    self.__material.load_data()
+
+  def __load_cost_aggregator(self):
+    """Load the CostAggregatorService data."""
     self.__cost_aggregator = CostAggregatorService(
       groups=self.__surgeon.data["group"].sort_values().tolist(),
       special_groups=self.__surgeon.data["special"].tolist(),
@@ -40,6 +56,7 @@ class ServiceFactory:
       ],
       pre_consulting=self.__pre_consultation,
     )
+    self.__cost_aggregator.load_data()
 
   @property
   def procedure(self) -> ProcedureService:
