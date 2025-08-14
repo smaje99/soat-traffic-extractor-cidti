@@ -6,12 +6,14 @@ from .utils import (
   match_procedure,
   match_surgical_assistant_services,
   match_surgical_fee,
+  pattern_material_fee,
   search_professional_services,
 )
 
 
 __all__ = (
   "parse_anesthesiologist_fees",
+  "parse_material_fees",
   "parse_operating_room_fees",
   "parse_pre_consultation_fees",
   "parse_procedure_records",
@@ -123,6 +125,7 @@ def parse_surgical_assistant_fees(pages: list[str]) -> pd.DataFrame:
 
   return parse_fee_records(rows)
 
+
 def parse_pre_consultation_fees(pages: list[str]) -> pd.DataFrame:
   """Parse pre-consultation fees from raw page texts.
 
@@ -136,7 +139,7 @@ def parse_pre_consultation_fees(pages: list[str]) -> pd.DataFrame:
   records: list[dict[str, int | str | float]] = []
   page = pages[0]
   index = page.index("39137")
-  lines = page[index :].split("\n") if index != -1 else []
+  lines = page[index:].split("\n") if index != -1 else []
   rows = [lines[0], lines[2]]
 
   for row in rows:
@@ -166,7 +169,38 @@ def parse_operating_room_fees(pages: list[str]) -> pd.DataFrame:
   """
   page = pages[0]
   index = page.index("39204")
-  result = page[index :].split("\n") if index != -1 else []
+  result = page[index:].split("\n") if index != -1 else []
   rows = result[0:16]
 
   return parse_fee_records(rows)
+
+
+def parse_material_fees(pages: list[str]) -> pd.DataFrame:
+  """Parse material fees from raw page texts.
+
+  Args:
+      pages (list[str]): A list of raw page texts.
+
+  Returns:
+      pd.DataFrame: A DataFrame containing parsed material fees
+        with "code", "group", "raw_group", "Fee (S.M.L.D.V)" and "Fee (COP)" columns.
+  """
+  records: list[dict[str, int | str | float]] = []
+  page = pages[0]
+  index = page.rindex("39301")
+  lines = page[index:].split("\n") if index != -1 else []
+  rows = lines[0:4]
+
+  for row in rows:
+    match = pattern_material_fee().match(row)
+    if match:
+      code, groups_raw, fee_sml, fee_cop = match.groups()
+
+      groups = [g.strip() for g in groups_raw.split("-") if g.strip()]
+
+      for group in groups:
+        records.append(
+          {"code": code, "group": group, "fee_sml": fee_sml, "fee_cop": fee_cop}
+        )
+
+  return pd.DataFrame(records)

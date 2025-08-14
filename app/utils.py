@@ -1,5 +1,5 @@
 import re
-from re import Match
+from re import Match, Pattern
 
 
 __all__ = (
@@ -9,6 +9,7 @@ __all__ = (
   "match_surgical_fee",
   "match_surgical_assistant_services",
   "match_pre_consultation_fee",
+  "pattern_material_fee",
 )
 
 
@@ -47,3 +48,11 @@ def match_pre_consultation_fee(text: str) -> Match[str] | None:
   code + description + fee (S.M.L.D.V) + fee (COP).
   """
   return re.search(r"^(\d{5})\s+(.*?)\s+([\d,]+)\s+([\d\.]+)$", text)
+
+
+def pattern_material_fee() -> Pattern[str]:
+  """Match material fee table rows.
+
+  code + raw_group + fee (S.M.L.D.V) + fee (COP).
+  """
+  return re.compile(r"^(\d{5})\s+GRUPOS\s+([\d\s\-]+)\s+([\d,]+)\s+([\d\.]+)$")
