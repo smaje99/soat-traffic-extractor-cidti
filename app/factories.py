@@ -3,6 +3,7 @@ from typing import final
 from app.services import (
   AnesthesiologistService,
   AssistantService,
+  OperatingRoomService,
   PreConsultationService,
   ProcedureService,
   SurgeonService,
@@ -23,6 +24,7 @@ class ServiceFactory:
     self.__anesthesiologist = AnesthesiologistService()
     self.__assistant = AssistantService()
     self.__pre_consultation = PreConsultationService()
+    self.__operating_room = OperatingRoomService()
 
   @property
   def procedure(self) -> ProcedureService:
@@ -48,3 +50,8 @@ class ServiceFactory:
   def pre_consultation(self) -> PreConsultationService:
     """Get the PreConsultationService singleton instance."""
     return self.__pre_consultation
+
+  @property
+  def operating_room(self) -> OperatingRoomService:
+    """Get the OperatingRoomService singleton instance."""
+    return self.__operating_room

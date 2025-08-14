@@ -12,6 +12,7 @@ from .utils import (
 
 __all__ = (
   "parse_anesthesiologist_fees",
+  "parse_operating_room_fees",
   "parse_pre_consultation_fees",
   "parse_procedure_records",
   "parse_surgeon_fees",
@@ -151,3 +152,21 @@ def parse_pre_consultation_fees(pages: list[str]) -> pd.DataFrame:
       )
 
   return pd.DataFrame(records)
+
+
+def parse_operating_room_fees(pages: list[str]) -> pd.DataFrame:
+  """Parse operating room fees from raw page texts.
+
+  Args:
+      pages (list[str]): A list of raw page texts.
+
+  Returns:
+      pd.DataFrame: A DataFrame containing parsed operating room fees
+        with "code", "group", "special", "Fee (S.M.L.D.V) and Fee (COP)" columns.
+  """
+  page = pages[0]
+  index = page.index("39204")
+  result = page[index :].split("\n") if index != -1 else []
+  rows = result[0:16]
+
+  return parse_fee_records(rows)
