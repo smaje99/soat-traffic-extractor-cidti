@@ -3,6 +3,7 @@ from typing import final
 from app.services import (
   AnesthesiologistService,
   AssistantService,
+  CostAggregatorService,
   MaterialService,
   OperatingRoomService,
   PreConsultationService,
@@ -27,6 +28,18 @@ class ServiceFactory:
     self.__pre_consultation = PreConsultationService()
     self.__operating_room = OperatingRoomService()
     self.__material = MaterialService()
+    self.__cost_aggregator = CostAggregatorService(
+      groups=self.__surgeon.data["group"].sort_values().tolist(),
+      special_groups=self.__surgeon.data["special"].tolist(),
+      group_finders=[
+        self.__surgeon,
+        self.__anesthesiologist,
+        self.__assistant,
+        self.__operating_room,
+        self.__material,
+      ],
+      pre_consulting=self.__pre_consultation,
+    )
 
   @property
   def procedure(self) -> ProcedureService:
@@ -62,3 +75,8 @@ class ServiceFactory:
   def material(self) -> MaterialService:
     """Get the MaterialService singleton instance."""
     return self.__material
+
+  @property
+  def cost_aggregator(self) -> CostAggregatorService:
+    """Get the CostAggregatorService singleton instance."""
+    return self.__cost_aggregator
