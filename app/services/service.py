@@ -32,6 +32,12 @@ class ServiceABC(metaclass=ABCMeta):
     """Get the data for the service."""
     return self._data
 
+  @property
+  @abstractmethod
+  def column(self) -> str:
+    """Get the column name of the service."""
+    ...
+
 
 class ServiceBase(
   ServiceABC,
@@ -41,12 +47,6 @@ class ServiceBase(
   metaclass=ABCMeta,
 ):
   """Base class for services."""
-
-  @property
-  @abstractmethod
-  def column(self) -> str:
-    """Get the column name of the service."""
-    ...
 
   @override
   def export_to_csv(self, output_path: Path):

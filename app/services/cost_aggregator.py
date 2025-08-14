@@ -6,7 +6,7 @@ from pandas import DataFrame
 from app.exporter import export_to_csv, export_to_json
 from app.interfaces import ExportDataInterface, FinderByGroupInterface
 from app.services.pre_consultation import PreConsultationService
-from app.services.service import ServiceABC, ServiceBase
+from app.services.service import ServiceABC
 
 
 __all__ = ("CostAggregatorService",)
@@ -46,7 +46,7 @@ class CostAggregatorService(ServiceABC, FinderByGroupInterface, ExportDataInterf
       for finder in self.__group_finders:
         data = finder.find_by_group(group)
         fee = data["Fee (COP)"].iloc[0] if not data.empty else 0
-        service: ServiceBase = cast(ServiceBase, finder)
+        service: ServiceABC = cast(ServiceABC, finder)
         record[service.column] = fee
         total += fee
 
@@ -79,3 +79,9 @@ class CostAggregatorService(ServiceABC, FinderByGroupInterface, ExportDataInterf
   def export_to_json(self, output_path: Path):
     """Export the data to a JSON file."""
     export_to_json(self._data, output_path)
+
+  @property
+  @override
+  def column(self) -> str:
+    """Get the column name of the service."""
+    return "costos"

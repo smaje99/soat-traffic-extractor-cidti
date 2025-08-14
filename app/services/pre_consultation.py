@@ -39,6 +39,12 @@ class PreConsultationService(ServiceABC, ExportDataInterface, FinderByCodeInterf
     return self._data[self._data["code"] == code]
 
   @property
+  @override
+  def column(self) -> str:
+    """Get the column name of the service."""
+    return "pre consulta"
+
+  @property
   def column_list(self) -> list[str]:
     """Get the list of column names for the service."""
     return ["prequirúrgica", "preanestésica"]
