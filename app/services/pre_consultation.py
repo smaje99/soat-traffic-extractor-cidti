@@ -7,8 +7,8 @@ from app.services.service import ServiceBase
 
 
 SOAT_FILE_PATH: Final = Path("data/soat-traffic-2025.pdf")
-INITIAL_NUMBER_PAGE_FROM_DOCUMENT: Final = 96
-FINAL_NUMBER_PAGE_FROM_DOCUMENT: Final = 97
+INITIAL_NUMBER_PAGE_FROM_DOCUMENT: Final = 98
+FINAL_NUMBER_PAGE_FROM_DOCUMENT: Final = 99
 
 
 @final
