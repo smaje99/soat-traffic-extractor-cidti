@@ -8,7 +8,7 @@ from .utils import (
 )
 
 
-__all__ = ("parse_procedure_records", "parse_surgical_professional_fees")
+__all__ = ("parse_procedure_records", "parse_surgeon_fees", "parse_anesthesiologist_fees")
 
 
 def parse_procedure_records(pages: list[str]) -> pd.DataFrame:
@@ -30,13 +30,40 @@ def parse_procedure_records(pages: list[str]) -> pd.DataFrame:
       # Procedure
       if proc_match := match_procedure(line):
         code, _, group = proc_match.groups()
-        records.append(
-          {"code": int(code), "group": int(group)}
-        )
+        records.append({"code": int(code), "group": int(group)})
 
   return pd.DataFrame(records)
 
-def parse_surgical_professional_fees(pages: list[str]) -> pd.DataFrame:
+
+def parse_fee_records(fees: list[str]) -> pd.DataFrame:
+  """Parse raw fee records into structured DataFrame.
+
+  Args:
+      fees (list[str]): A list of raw fee records.
+
+  Returns:
+      pd.DataFrame: A DataFrame containing parsed fee records
+        with "code", "group", "special", "Fee (S.M.L.D.V) and Fee (COP)" columns.
+  """
+  records: list[dict[str, int | float | bool]] = []
+
+  for fee in fees:
+    if fee_match := match_surgical_fee(fee):
+      code, group, fee_sml, fee_cop = fee_match.groups()
+      records.append(
+        {
+          "code": int(code),
+          "group": int(group.split()[-1]),
+          "special": group.find("especial") != -1,
+          "Fee (S.M.L.D.V)": float(fee_sml.replace(",", ".")),
+          "Fee (COP)": int(fee_cop.replace(".", "")),
+        }
+      )
+
+  return pd.DataFrame(records)
+
+
+def parse_surgeon_fees(pages: list[str]) -> pd.DataFrame:
   """Parse surgical professional fees from raw page texts.
 
   Args:
@@ -44,27 +71,27 @@ def parse_surgical_professional_fees(pages: list[str]) -> pd.DataFrame:
 
   Returns:
       pd.DataFrame: A DataFrame containing parsed surgical professional fees
-        with "code", "group", and "Fee (S.M.L.D.V)" columns.
+        with "code", "group", "special", "Fee (S.M.L.D.V) and Fee (COP)" columns.
   """
-  records: list[dict[str, int | float | bool]] = []
-
   page = pages[0]
   match = search_professional_services(page)
-  result = page[match.start():].split("\n") if match else []
+  result = page[match.start() :].split("\n") if match else []
   rows = result[1:-1]
 
-  def get_record(row: str) -> dict[str, int | float | bool]:
-    """Extracts a record from a row of text."""
-    row_match = match_surgical_fee(row)
-    if not row_match:
-      return {}
-    return {
-      "code": int(row_match.group(1)),
-      "group": int(row_match.group(2).split()[-1]),
-      "special": str(row_match.group(2)).find("especial") != -1,
-      "Fee (S.M.L.D.V)": float(row_match.group(3).replace(",", ".")),
-      "Fee (COP)": int(row_match.group(4).replace(".", "")),
-    }
+  return parse_fee_records(rows)
 
-  records = [get_record(row) for row in rows if get_record(row)]
-  return pd.DataFrame(records)
+
+def parse_anesthesiologist_fees(pages: list[str]) -> pd.DataFrame:
+  """Parse anesthesiologist fees from raw page texts.
+
+  Args:
+      pages (list[str]): A list of raw page texts.
+
+  Returns:
+      pd.DataFrame: A DataFrame containing parsed anesthesiologist fees
+        with "code", "group", "special", "Fee (S.M.L.D.V) and Fee (COP)" columns.
+  """
+  lines = pages[0].split("\n")
+  rows = lines[2:18]
+
+  return parse_fee_records(rows)
