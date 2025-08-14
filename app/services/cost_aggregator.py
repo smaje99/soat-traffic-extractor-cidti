@@ -37,12 +37,34 @@ class CostAggregatorService(ServiceABC, FinderByGroupInterface, ExportDataInterf
 
   @override
   def load_data(self):
-    records: list[dict[str, int | str | bool]] = []
+    """Load and aggregate fee data for all surgical groups.
 
+    This method iterates through all surgical groups and their "special" flags,
+    collecting fees from multiple service finders (e.g., surgeon, anesthesiologist,
+    materials) and pre-consultation data. For each group:
+      - Initializes a record containing the group identifier and special flag.
+      - Collects fees from each registered group finder service, summing them
+        into a running total for the group.
+      - Adds pre-consultation fees unless the group is listed in
+        `GROUPS_NO_PRE_CONSULTING`.
+      - Appends the total cost and stores the record in a list.
+
+    Once all groups have been processed, the list of records is converted into a
+    pandas DataFrame and stored in `self._data`.
+
+    Side Effects:
+        Updates the internal `_data` attribute with the aggregated results.
+    """
+    records: list[dict[str, int | str | bool]] = []
+    pre_consultation_data = self.__pre_consulting.data
+    pre_consultation_columns = self.__pre_consulting.column_list
+
+    # Iterate through each group and its "special" flag
     for group, is_special in zip(self.__groups, self.__special_groups, strict=False):
       record: dict[str, int | str | bool] = {"group": group, "special": is_special}
       total: int = 0
 
+      # Collect fees from each service finder for the current group
       for finder in self.__group_finders:
         data = finder.find_by_group(group)
         fee = data["Fee (COP)"].iloc[0] if not data.empty else 0
@@ -50,8 +72,7 @@ class CostAggregatorService(ServiceABC, FinderByGroupInterface, ExportDataInterf
         record[service.column] = fee
         total += fee
 
-      pre_consultation_data = self.__pre_consulting.data
-      pre_consultation_columns = self.__pre_consulting.column_list
+      # Add pre-consultation fees if applicable
       for index, column_name in enumerate(pre_consultation_columns):
         fee = (
           pre_consultation_data["Fee (COP)"].iloc[index]
@@ -61,9 +82,11 @@ class CostAggregatorService(ServiceABC, FinderByGroupInterface, ExportDataInterf
         record[column_name] = fee
         total += fee
 
+      # Store the total cost for the group
       record["total"] = total
       records.append(record)
 
+    # Save aggregated results as a DataFrame
     self._data = DataFrame(records)
 
   @override
