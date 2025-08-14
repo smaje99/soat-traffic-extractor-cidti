@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Final, final
+from typing import Final, final, override
 
 from app.extractor import extract_text_from_pdf
 from app.parser import parse_material_fees
@@ -19,6 +19,7 @@ class MaterialService(ServiceBase):
     """Service for managing material fees."""
     super().__init__()
 
+  @override
   def load_data(self):
     """Load material fees data from the source."""
     pages = extract_text_from_pdf(
@@ -27,3 +28,9 @@ class MaterialService(ServiceBase):
       FINAL_NUMBER_PAGE_FROM_DOCUMENT,
     )
     self._data = parse_material_fees(pages)
+
+  @property
+  @override
+  def column(self) -> str:
+    """Get the column name of the service."""
+    return "instrumentario"

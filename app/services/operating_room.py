@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Final, final
+from typing import Final, final, override
 
 from app.extractor import extract_text_from_pdf
 from app.parser import parse_operating_room_fees
@@ -19,6 +19,7 @@ class OperatingRoomService(ServiceBase):
     """Service for managing operating room fees."""
     super().__init__()
 
+  @override
   def load_data(self):
     """Load operating room fees data from the source."""
     pages = extract_text_from_pdf(
@@ -27,3 +28,9 @@ class OperatingRoomService(ServiceBase):
       FINAL_NUMBER_PAGE_FROM_DOCUMENT,
     )
     self._data = parse_operating_room_fees(pages)
+
+  @property
+  @override
+  def column(self) -> str:
+    """Get the column name of the service."""
+    return "sala de cirugía"

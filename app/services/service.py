@@ -42,6 +42,12 @@ class ServiceBase(
 ):
   """Base class for services."""
 
+  @property
+  @abstractmethod
+  def column(self) -> str:
+    """Get the column name of the service."""
+    ...
+
   @override
   def export_to_csv(self, output_path: Path):
     """Export the data to a CSV file."""

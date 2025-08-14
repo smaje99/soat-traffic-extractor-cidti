@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Final, final
+from typing import Final, final, override
 
 from app.extractor import extract_text_from_pdf
 from app.parser import parse_procedure_records
@@ -21,6 +21,7 @@ class ProcedureService(ServiceBase):
     """Service for managing procedures in the SOAT 2025 tariff."""
     super().__init__()
 
+  @override
   def load_data(self):
     """Load procedure data from the source."""
     pages = extract_text_from_pdf(
@@ -29,3 +30,9 @@ class ProcedureService(ServiceBase):
       FINAL_NUMBER_PAGE_FROM_CHAPTER_TREE,
     )
     self._data = parse_procedure_records(pages)
+
+  @property
+  @override
+  def column(self) -> str:
+    """Get the column name of the service."""
+    return "Procedimientos SOAT"

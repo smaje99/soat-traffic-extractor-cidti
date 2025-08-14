@@ -38,6 +38,11 @@ class PreConsultationService(ServiceABC, ExportDataInterface, FinderByCodeInterf
     """Find a row by code."""
     return self._data[self._data["code"] == code]
 
+  @property
+  def column_list(self) -> list[str]:
+    """Get the list of column names for the service."""
+    return ["prequirúrgica", "preanestésica"]
+
   @override
   def export_to_csv(self, output_path: Path) -> None:
     """Export data to a CSV file."""
