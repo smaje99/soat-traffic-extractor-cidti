@@ -1,5 +1,5 @@
 from .procedure import ProcedureService
-from .surgical_professional import SurgicalProfessionalService
+from .surgeon import SurgeonService
 
 
-__all__ = ("ProcedureService", "SurgicalProfessionalService")
+__all__ = ("ProcedureService", "SurgeonService")

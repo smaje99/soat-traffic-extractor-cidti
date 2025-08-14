@@ -1,6 +1,6 @@
 from typing import final
 
-from app.services import ProcedureService, SurgicalProfessionalService
+from app.services import ProcedureService, SurgeonService
 
 
 __all__ = ("ServiceFactory",)
@@ -12,7 +12,7 @@ class ServiceFactory:
   def __init__(self) -> None:
     """Initialize the service factory."""
     self.__procedure = ProcedureService()
-    self.__surgical_professional = SurgicalProfessionalService()
+    self.__surgeon = SurgeonService()
 
   @property
   def procedure(self) -> ProcedureService:
@@ -20,6 +20,6 @@ class ServiceFactory:
     return self.__procedure
 
   @property
-  def surgical_professional(self) -> SurgicalProfessionalService:
+  def surgeon(self) -> SurgeonService:
     """Get the SurgicalProfessionalService singleton instance."""
-    return self.__surgical_professional
+    return self.__surgeon

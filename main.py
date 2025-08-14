@@ -17,8 +17,8 @@ def main():
   print("Cargando tarifario SOAT 2025...")
   factory.procedure.load_data()
   print(f"{len(factory.procedure.data)} registros cargados...")
-  factory.surgical_professional.load_data()
-  print(f"{len(factory.surgical_professional.data)} registros cargados.")
+  factory.surgeon.load_data()
+  print(f"{len(factory.surgeon.data)} registros cargados.")
 
   while True:
     choice = input(
@@ -63,7 +63,7 @@ def main():
       print(result)
     elif choice == "5":
       group = input("Ingrese el grupo quirúrgico: ")
-      result = factory.surgical_professional.find_by_group(int(group))
+      result = factory.surgeon.find_by_group(int(group))
       if result.empty:
         print("Cuotas no encontradas.")
         continue
