@@ -2,6 +2,7 @@ import pandas as pd
 
 from .utils import (
   clean_text,
+  match_pre_consultation_fee,
   match_procedure,
   match_surgical_assistant_services,
   match_surgical_fee,
@@ -10,9 +11,10 @@ from .utils import (
 
 
 __all__ = (
+  "parse_anesthesiologist_fees",
+  "parse_pre_consultation_fees",
   "parse_procedure_records",
   "parse_surgeon_fees",
-  "parse_anesthesiologist_fees",
   "parse_surgical_assistant_fees",
 )
 
@@ -115,7 +117,37 @@ def parse_surgical_assistant_fees(pages: list[str]) -> pd.DataFrame:
   """
   page = pages[0]
   match = match_surgical_assistant_services(page)
-  result = page[match.start() :].split("\n") if match else []
-  rows = result[1:13]
+  lines = page[match.start() :].split("\n") if match else []
+  rows = lines[1:13]
 
   return parse_fee_records(rows)
+
+def parse_pre_consultation_fees(pages: list[str]) -> pd.DataFrame:
+  """Parse pre-consultation fees from raw page texts.
+
+  Args:
+      pages (list[str]): A list of raw page texts.
+
+  Returns:
+      pd.DataFrame: A DataFrame containing parsed pre-consultation fees
+        with "code", "description", "Fee (S.M.L.D.V)" and "Fee (COP)" columns.
+  """
+  records: list[dict[str, int | str | float]] = []
+  page = pages[0]
+  index = page.index("39137")
+  lines = page[index :].split("\n") if index != -1 else []
+  rows = [lines[0], lines[2]]
+
+  for row in rows:
+    if match := match_pre_consultation_fee(row):
+      code, description, fee_sml, fee_cop = match.groups()
+      records.append(
+        {
+          "code": int(code),
+          "description": description,
+          "Fee (S.M.L.D.V)": float(fee_sml.replace(",", ".")),
+          "Fee (COP)": int(fee_cop.replace(".", "")),
+        }
+      )
+
+  return pd.DataFrame(records)
