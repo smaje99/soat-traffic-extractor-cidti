@@ -200,7 +200,12 @@ def parse_material_fees(pages: list[str]) -> pd.DataFrame:
 
       for group in groups:
         records.append(
-          {"code": code, "group": group, "fee_sml": fee_sml, "fee_cop": fee_cop}
+          {
+            "code": int(code),
+            "group": int(group),
+            "Fee (S.M.L.D.V)": float(fee_sml.replace(",", ".")),
+            "Fee (COP)": int(fee_cop.replace(".", "")),
+          }
         )
 
   return pd.DataFrame(records)
