@@ -14,9 +14,11 @@ def main():
 
   factory = ServiceFactory()
 
-  print("Cargando capítulo 3 del tarifario SOAT 2025...")
+  print("Cargando tarifario SOAT 2025...")
   factory.procedure.load_data()
-  print(f"{len(factory.procedure.data)} registros cargados.")
+  print(f"{len(factory.procedure.data)} registros cargados...")
+  factory.surgical_professional.load_data()
+  print(f"{len(factory.surgical_professional.data)} registros cargados.")
 
   while True:
     choice = input(
@@ -24,6 +26,8 @@ def main():
       "1. Exportar procedimientos a CSV\n"
       "2. Exportar procedimientos a JSON\n"
       "3. Buscar procedimiento por código\n"
+      "4. Buscar procedimientos por grupo quirúrgico\n"
+      "5. Buscar cuotas de profesional quirúrgico por grupo quirúrgico\n"
       "0. Salir\n"
       "Opción: "
     )
@@ -47,6 +51,24 @@ def main():
         continue
 
       print("Procedimiento encontrado:")
+      print(result)
+    elif choice == "4":
+      group = input("Ingrese el grupo del procedimiento: ")
+      result = factory.procedure.find_by_group(int(group))
+      if result.empty:
+        print("Procedimientos no encontrados.")
+        continue
+
+      print("Procedimientos encontrados:")
+      print(result)
+    elif choice == "5":
+      group = input("Ingrese el grupo quirúrgico: ")
+      result = factory.surgical_professional.find_by_group(int(group))
+      if result.empty:
+        print("Cuotas no encontradas.")
+        continue
+
+      print("Cuotas encontradas:")
       print(result)
     elif choice == "0":
       break
