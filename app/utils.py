@@ -7,6 +7,7 @@ __all__ = (
   "match_procedure",
   "search_professional_services",
   "match_surgical_fee",
+  "match_surgical_assistant_services",
 )
 
 
@@ -32,3 +33,7 @@ def match_surgical_fee(line: str) -> Match[str] | None:
     line,
     re.IGNORECASE,
   )
+
+def match_surgical_assistant_services(text: str) -> Match[str] | None:
+  """Match surgical assistant services in the text."""
+  return re.search(r"3\s+Servicios profesionales de ayudantía quirúrgica:", text)

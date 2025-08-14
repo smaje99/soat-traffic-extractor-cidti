@@ -3,12 +3,18 @@ import pandas as pd
 from .utils import (
   clean_text,
   match_procedure,
+  match_surgical_assistant_services,
   match_surgical_fee,
   search_professional_services,
 )
 
 
-__all__ = ("parse_procedure_records", "parse_surgeon_fees", "parse_anesthesiologist_fees")
+__all__ = (
+  "parse_procedure_records",
+  "parse_surgeon_fees",
+  "parse_anesthesiologist_fees",
+  "parse_surgical_assistant_fees",
+)
 
 
 def parse_procedure_records(pages: list[str]) -> pd.DataFrame:
@@ -93,5 +99,23 @@ def parse_anesthesiologist_fees(pages: list[str]) -> pd.DataFrame:
   """
   lines = pages[0].split("\n")
   rows = lines[2:18]
+
+  return parse_fee_records(rows)
+
+
+def parse_surgical_assistant_fees(pages: list[str]) -> pd.DataFrame:
+  """Parse surgical assistant fees from raw page texts.
+
+  Args:
+      pages (list[str]): A list of raw page texts.
+
+  Returns:
+      pd.DataFrame: A DataFrame containing parsed surgical assistant fees
+        with "code", "group", "special", "Fee (S.M.L.D.V) and Fee (COP)" columns.
+  """
+  page = pages[0]
+  match = match_surgical_assistant_services(page)
+  result = page[match.start() :].split("\n") if match else []
+  rows = result[1:13]
 
   return parse_fee_records(rows)
