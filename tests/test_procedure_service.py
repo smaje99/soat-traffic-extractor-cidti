@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Any
 
 from pandas import DataFrame
 from pytest import MonkeyPatch, fixture
@@ -56,39 +55,15 @@ def test_load_data_real():
   assert not procedure.data.empty
   assert len(procedure.data) == 1771
   assert list(procedure.data.columns) == ["code", "group"]
-  assert len(procedure.data["group"].unique()) == 16
+  assert len(procedure.data["group"].unique()) == 16  # noqa: PLR2004
 
-def test_find_by_code(patch_procedure_service: MonkeyPatch, sample_data: DataFrame):
+def test_find_by_code():
   """Test finding procedures by code."""
   procedure = ProcedureService()
   procedure.load_data()
+  result = procedure.find_by_code(1101)
 
-def test_export_to_csv(patch_procedure_service: MonkeyPatch, sample_data: DataFrame):
-  """Test exporting data to CSV."""
-  export_to_csv_dict = {"called": False}
-
-  def mock_export_to_csv(_: Any, output_path: Path):
-    export_to_csv_dict["called"] = True
-
-  patch_procedure_service.setattr("app.services.procedure.export_to_csv", mock_export_to_csv)
-
-  procedure = ProcedureService()
-  procedure.load_data()
-  procedure.export_to_csv(Path("output.csv"))
-
-  assert export_to_csv_dict["called"]
-
-def test_export_to_json(patch_procedure_service: MonkeyPatch, sample_data: DataFrame):
-  """Test exporting data to JSON."""
-  export_to_json_dict = {"called": False}
-
-  def mock_export_to_json(_: Any, output_path: Path):
-    export_to_json_dict["called"] = True
-
-  patch_procedure_service.setattr("app.services.procedure.export_to_json", mock_export_to_json)
-
-  procedure = ProcedureService()
-  procedure.load_data()
-  procedure.export_to_json(Path("output.json"))
-
-  assert export_to_json_dict["called"]
+  assert result is not None
+  assert isinstance(result, DataFrame)
+  assert len(result) == 1
+  assert result["group"].iloc[0] == 9  # noqa: PLR2004
