@@ -104,5 +104,68 @@ mypy .
 - El PDF fuente debe estar en la carpeta `data/`.
 
 ---
+## Módulo API (FastAPI)
+
+El módulo `api` implementa una API RESTful utilizando FastAPI, permitiendo exponer los servicios y datos del tarifario SOAT 2025 a través de endpoints HTTP. Esta API facilita la integración con sistemas externos, aplicaciones web y automatización de consultas y exportaciones.
+
+### Estructura del módulo
+
+```
+api/
+├── __init__.py
+├── main.py              # Punto de entrada de la API (instancia FastAPI)
+├── routes.py            # Definición de rutas/endpoints principales
+├── daos.py              # Acceso a datos y lógica de persistencia
+├── data.py              # Estructuras y utilidades para manejo de datos
+├── error_handlers.py    # Gestión de errores y excepciones personalizadas
+├── schemas.py           # Esquemas Pydantic para validación y serialización
+└── controllers/
+  ├── __init__.py
+  ├── procedure.py     # Controlador para procedimientos
+  └── surgical_group.py# Controlador para grupos quirúrgicos
+```
+
+### Objetivo y funcionalidades
+
+- Exponer los datos y servicios del tarifario SOAT 2025 mediante endpoints RESTful.
+- Permitir búsquedas de procedimientos y grupos quirúrgicos vía HTTP.
+- Gestionar errores y respuestas consistentes.
+
+### Ejecución de la API
+
+Para iniciar el servidor de desarrollo de la API:
+
+```sh
+uv run fastapi dev api/main.py
+```
+
+O usando directamente FastAPI/Uvicorn:
+
+```sh
+uvicorn api.main:app --reload
+```
+
+La API estará disponible en `http://localhost:8000` por defecto.
+
+### Endpoints principales
+
+Algunos endpoints típicos:
+
+- `api/procedures/{code}` — Consulta de procedimiento por código.
+- `api/surgical-groups/{code}` — Consulta de grupo quirúrgico por código.
+
+### Esquemas y validación
+
+El módulo `schemas.py` define los modelos Pydantic para validar y serializar los datos de entrada/salida, asegurando respuestas estructuradas y seguras.
+
+### Manejo de errores
+
+`error_handlers.py` centraliza la gestión de errores, devolviendo respuestas HTTP claras y consistentes ante excepciones o validaciones fallidas.
+
+### Pruebas y desarrollo
+
+Se recomienda probar los endpoints usando herramientas como [Swagger UI](http://localhost:8000/docs) (incluida por defecto en FastAPI), [Postman](https://www.postman.com/) o curl.
+
+---
 
 CIDTI - Prácticas en Empresa - UNIR
