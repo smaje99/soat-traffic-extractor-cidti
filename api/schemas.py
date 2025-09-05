@@ -5,13 +5,9 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict
 
 
 __all__ = (
-    "Group",
-    "Code",
-    "Procedure",
-    "FeeBase",
-    "Fee",
-    "PreConsultationFee",
-    "MaterialFee",
+  "Group",
+  "Code",
+  "Procedure",
 )
 
 
@@ -64,6 +60,7 @@ def validate_code(code: int | str) -> int:
     raise ValueError("Code must be between 4 and 5 digits.")
   return code
 
+
 Code = Annotated[int, BeforeValidator(validate_code)]
 """Value Object for Code Procedure."""
 
@@ -75,40 +72,6 @@ class Procedure(BaseModel):
   """Code procedure. Must be between 4 and 5 digits."""
   group: Group
   """Group procedure. Must be between 2 and 23."""
-
-  model_config = MODEL_CONFIG
-
-
-class FeeBase(BaseModel):
-  """Base schema for fees."""
-
-  code: int
-  fee_sml: float
-  """Fee for the procedure in S.M.L.D.V."""
-  fee_cop: float
-  """Fee for the procedure in COP."""
-
-
-class Fee(FeeBase):
-  """Fee schema."""
-
-  group: Group
-
-  model_config = MODEL_CONFIG
-
-
-class PreConsultationFee(BaseModel):
-  """Pre-Consultation Fee schema."""
-
-  description: str
-
-  model_config = MODEL_CONFIG
-
-
-class MaterialFee(BaseModel):
-  """Material Fee schema."""
-
-  group: Group
 
   model_config = MODEL_CONFIG
 
