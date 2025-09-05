@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.data import get_factory
+from api.error_handlers import value_error_handler
 
 
 @asynccontextmanager
@@ -29,3 +30,5 @@ app.add_middleware(
   allow_methods=["*"],
   allow_headers=["*"],
 )
+
+app.add_exception_handler(ValueError, value_error_handler)  # type: ignore
