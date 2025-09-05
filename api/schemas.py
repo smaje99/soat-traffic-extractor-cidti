@@ -1,7 +1,7 @@
 import math
 from typing import Annotated, Final
 
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
+from pydantic import BaseModel, BeforeValidator, ConfigDict
 
 
 __all__ = (
@@ -74,6 +74,7 @@ class Procedure(BaseModel):
   code: Code
   """Code procedure. Must be between 4 and 5 digits."""
   group: Group
+  """Group procedure. Must be between 2 and 23."""
 
   model_config = MODEL_CONFIG
 
@@ -82,8 +83,10 @@ class FeeBase(BaseModel):
   """Base schema for fees."""
 
   code: int
-  fee_sml: float = Field(..., alias="Fee (S.M.L.D.V)")
-  fee_cop: float = Field(..., alias="Fee (COP)")
+  fee_sml: float
+  """Fee for the procedure in S.M.L.D.V."""
+  fee_cop: float
+  """Fee for the procedure in COP."""
 
 
 class Fee(FeeBase):
@@ -115,13 +118,13 @@ class SurgicalGroup(BaseModel):
 
   group: Group
   special: bool
-  surgeon: float = Field(..., alias="cirujano")
-  anesthesiology: float = Field(..., alias="anestesiología")
-  assistant: float = Field(..., alias="ayudantía")
-  operating_room: float = Field(..., alias="sala de cirugía")
-  materials: float = Field(..., alias="instrumentario")
-  presurgical: float = Field(..., alias="prequirúrgica")
-  preanesthetic: float = Field(..., alias="preanestésica")
+  surgeon: float
+  anesthesiology: float
+  assistant: float
+  operating_room: float
+  materials: float
+  presurgical: float
+  preanesthetic: float
   total: float
 
   model_config = MODEL_CONFIG
