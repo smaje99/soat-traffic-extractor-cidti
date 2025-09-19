@@ -3,8 +3,12 @@ from typing import Final, cast, final, override
 
 from pandas import DataFrame
 
-from app.exporter import export_to_csv, export_to_json
-from app.interfaces import ExportDataInterface, FinderByGroupInterface
+from app.exporter import export_to_csv, export_to_json, export_to_sqlite
+from app.interfaces import (
+  ExportDataInterface,
+  FinderByGroupInterface,
+  SQLiteExportInterface,
+)
 from app.services.pre_consultation import PreConsultationService
 from app.services.service import ServiceABC
 
@@ -18,7 +22,7 @@ the article 75."""
 
 
 @final
-class CostAggregatorService(ServiceABC, FinderByGroupInterface, ExportDataInterface):
+class CostAggregatorService(ServiceABC, FinderByGroupInterface, ExportDataInterface, SQLiteExportInterface):
   """Service for aggregating costs from different surgical procedures groups."""
 
   def __init__(
@@ -108,3 +112,24 @@ class CostAggregatorService(ServiceABC, FinderByGroupInterface, ExportDataInterf
   def column(self) -> str:
     """Get the column name of the service."""
     return "costos"
+
+  @override
+  def export_to_sqlite(self):
+    # Transform the DataFrame to ensure compatibility with SQLite
+    data = self._data.copy()
+    data["group"] = data["group"].astype(int)
+    data["special"] = data["special"].astype(bool)
+    data["surgeon"] = data["cirujano"].astype(float)
+    data["anesthesiology"] = data["anestesiología"].astype(float)
+    data["assistant"] = data["ayudantía"].astype(float)
+    data["operating_room"] = data["sala de cirugía"].astype(float)
+    data["materials"] = data["instrumentario"].astype(float)
+    data["presurgical"] = data["prequirúrgica"].astype(float)
+    data["preanesthetic"] = data["preanestésica"].astype(float)
+    data["total"] = data["total"].astype(float)
+
+    # Remove original columns with special characters
+    data = data.drop(columns=["cirujano", "anestesiología", "ayudantía", "sala de cirugía", "instrumentario", "prequirúrgica", "preanestésica"])
+
+
+    export_to_sqlite(data, "surgical_groups")

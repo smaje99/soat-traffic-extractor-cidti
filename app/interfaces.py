@@ -4,7 +4,7 @@ from pathlib import Path
 from pandas import DataFrame
 
 
-__all__ = ("ExportDataInterface", "FinderByCodeInterface", "FinderByGroupInterface")
+__all__ = ("ExportDataInterface", "FinderByCodeInterface", "FinderByGroupInterface", "SQLiteExportInterface")
 
 
 class ExportDataInterface(metaclass=ABCMeta):
@@ -33,3 +33,11 @@ class FinderByGroupInterface(metaclass=ABCMeta):
   @abstractmethod
   def find_by_group(self, group: int) -> DataFrame:
     """Find rows by group."""
+
+
+class SQLiteExportInterface(metaclass=ABCMeta):
+  """Interface for exporting data to SQLite."""
+
+  @abstractmethod
+  def export_to_sqlite(self):
+    """Export data to a SQLite database table."""

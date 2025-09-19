@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Final, cast
 
 from app.factories import ServiceFactory
-from app.interfaces import ExportDataInterface
+from app.interfaces import ExportDataInterface, SQLiteExportInterface
 from app.services.service import ServiceABC
 
 
@@ -44,6 +44,7 @@ def main():  # noqa: PLR0912
       "3. Ver todos los grupos quirúrgicos\n"
       "4. Exportar registro a un archivo CSV\n"
       "5. Exportar registro a un archivo JSON\n"
+      "6. Exportar registro a una base de datos SQLite\n"
       "0. Salir\n"
       "Opción: "
     )
@@ -102,6 +103,12 @@ def main():  # noqa: PLR0912
         filename = cast(ServiceABC, exporter).column
         exporter.export_to_json(Path(f"output/{filename}.json"))
       print("Registros exportados a JSON correctamente.")
+    elif choice == "6":
+      print("Exportando registros a SQLite...")
+      for exporter in exporters:
+        if isinstance(exporter, SQLiteExportInterface):
+          exporter.export_to_sqlite()
+      print("Registros exportados a SQLite correctamente.")
     elif choice == "0":
       break
     else:
