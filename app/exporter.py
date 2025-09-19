@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from app.database import get_database
+
 
 __all__ = ("export_to_csv", "export_to_json",)
 
@@ -32,3 +34,13 @@ def export_to_json(df: pd.DataFrame, output_path: Path):
   """
   _create_output_folder(output_path)
   df.to_json(output_path, orient="records", indent=2, force_ascii=False)  # type: ignore
+
+
+def export_to_sqlite(df: pd.DataFrame, table_name: str):
+  """Export DataFrame to SQLite database.
+
+  Args:
+      df (pd.DataFrame): The DataFrame to export.
+      table_name (str): The name of the table to export the data to.
+  """
+  df.to_sql(table_name, get_database(), if_exists="replace", index=False)  # type: ignore
